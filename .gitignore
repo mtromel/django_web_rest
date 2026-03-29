@@ -57,9 +57,22 @@ cover/
 
 # Django stuff:
 *.log
+*.pyc
+__pycache__/
+media
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
+
+# Backup files
+*.bak
+
+# Python
+*.py[cod]
+*$py.class
+
+# Pyenv
+.python-version
 
 # Flask stuff:
 instance/
@@ -143,6 +156,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+venvDjWf
 
 # Spyder project settings
 .spyderproject
@@ -205,3 +219,13 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Personal additions
+*.pyc
+__localcode
+.DS_Store
+local_settings.py
+_local_settings.py
+gunicorn-error.log
+db copy.sqlite3
+static/
