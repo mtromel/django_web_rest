@@ -17,4 +17,5 @@ def recipe(request, id):
         'recipes/pages/recipe-view.html',
         context={
             'recipe': make_recipe(),
+            'is_detail_page': True,
         })
