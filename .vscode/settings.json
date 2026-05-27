@@ -10,8 +10,9 @@
     "python.testing.pytestArgs": [], // -x to bail
     "python.defaultInterpreterPath": "venv/bin/python",
     "[python]": {
-        "editor.defaultFormatter": "ms-python.python", // ms-python.python
+        "editor.defaultFormatter": "ms-python.autopep8", // ms-python.python
         "editor.tabSize": 4,
+        "editor.rulers": [79],
         "editor.insertSpaces": true,
         "editor.formatOnSave": true,
         "editor.formatOnType": true,
@@ -53,5 +54,7 @@
         "django-html": "html", // batisteo.vscode-django
         "javascript": "javascriptreact",
         "typescript": "typescriptreact"
-    }
+    },
+    "python.analysis.typeCheckingMode": "off",
+    "python.analysis.autoImportCompletions": false
     }
