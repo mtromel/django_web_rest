@@ -9,13 +9,6 @@ class RecipeModelTest(RecipeTestBase):
         self.recipe = self.make_recipe()
         return super().setUp()
 
-    def test_recipe_title_raises_error_if_title_has_more_than_65_characters(self):
-        """Teste para verificar se o título da receita lança um erro quando
-        tem mais de 65 caracteres"""
-        self.recipe.title = "A" * 70
-        with self.assertRaises(ValidationError):
-            self.recipe.full_clean()
-
     @parameterized.expand(
         [
             ("title", 65),
