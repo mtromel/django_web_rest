@@ -130,3 +130,20 @@ class RecipeViewsTest(RecipeTestBase):
         )
 
         self.assertEqual(response.status_code, 404)
+
+    def test_recipe_search_view_function_is_correct(self):
+        """Teste para verificar se a função da view search é a correta"""
+        view = resolve(reverse("recipes:search"))
+        self.assertIs(view.func, views.search)
+
+    def test_recipe_search_view_loads_correct_template(self):
+        """Teste para verificar se a view search carrega o template correto"""
+        response = self.client.get(reverse("recipes:search"))
+        self.assertTemplateUsed(response, "recipes/pages/search.html")
+
+    def test_recipe_search_raises_404_if_no_search_term(self):
+        """Teste para verificar se a view search retorna o status code 404
+        quando não há termo de busca"""
+        url = reverse("recipes:search")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
