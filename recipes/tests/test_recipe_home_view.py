@@ -1,0 +1,56 @@
+"""Testes para os views de receitas"""
+
+from django.urls import resolve, reverse
+
+from recipes import views
+
+from .test_recipe_base import RecipeTestBase
+
+
+class RecipeHomeViewTest(RecipeTestBase):
+    """Testes para os views de receitas"""
+
+    def test_recipe_home_view_function_is_correct(self):
+        """Teste para verificar se a função da view home é a correta"""
+        view = resolve(reverse("recipes:home"))
+        self.assertIs(view.func, views.home)
+
+    def test_recipe_home_view_returns_status_code_200(self):
+        """Teste para verificar se a view home retorna o status code 200"""
+        response = self.client.get(reverse("recipes:home"))
+        self.assertEqual(response.status_code, 200)
+
+    def test_recipe_home_view_loads_correct_template(self):
+        """Teste para verificar se a view home carrega o template correto"""
+        response = self.client.get(reverse("recipes:home"))
+        self.assertTemplateUsed(response, "recipes/pages/home.html")
+
+    def test_recipe_home_template_shows_no_recipes_found_if_no_recipes(self):
+        """Teste para verificar se o template da view home mostra mensagem de
+        nenhuma receita encontrada quando não há receitas"""
+        response = self.client.get(reverse("recipes:home"))
+        self.assertIn(
+            "<h1> No recipes found here... 😒 </h1>", response.content.decode("utf-8")
+        )
+
+    def test_recipe_home_template_loads_recipes(self):
+        """Teste para verificar se o template da view home carrega as
+        receitas"""
+
+        self.make_recipe()
+        response = self.client.get(reverse("recipes:home"))
+        content = response.content.decode("utf-8")
+        response_context_recipes = response.context["recipes"]
+        self.assertIn("Recipe Title", content)
+        self.assertEqual(len(response_context_recipes), 1)
+
+    def test_recipe_home_template_dont_load_recipes_not_published(self):
+        """Teste para verificar se quando o published for False a receita
+        não é carregada no template da view home"""
+
+        self.make_recipe(is_published=False)
+        response = self.client.get(reverse("recipes:home"))
+
+        self.assertIn(
+            "<h1> No recipes found here... 😒 </h1>", response.content.decode("utf-8")
+        )
