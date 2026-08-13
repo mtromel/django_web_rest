@@ -109,3 +109,42 @@ class AuthorRegisterFromIntegrationTest(DjangoTestCase):
         msg = "Username must have less tha 150 characters"
         self.assertIn(msg, response.content.decode("utf-8"))
         self.assertIn(msg, response.context["form"].errors.get("username"))
+
+    def test_password_field_have_lower_upper_case_letters_and_numbers(self):
+        self.form_data["password"] = "abc123"
+        url = reverse("authors:create")
+        response = self.client.post(url, data=self.form_data, follow=True)
+        msg = (
+            "Password mut have at least one uppercase letter, "
+            "one lowercase letter and one number. The length should be "
+            "at least 8 characters."
+        )
+        self.assertIn(msg, response.content.decode("utf-8"))
+        self.assertIn(msg, response.context["form"].errors.get("password"))
+
+        self.form_data["password"] = "A@bc1234"
+        url = reverse("authors:create")
+        response = self.client.post(url, data=self.form_data, follow=True)
+
+        self.assertNotIn(msg, response.content.decode("utf-8"))
+        self.assertNotIn(msg, response.context["form"].errors.get("password"))
+
+    def test_password_and_password_confirmation_is_equal(self):
+        self.form_data["password"] = "@A123abc123"
+        self.form_data["password2"] = "@A123abc1235"
+        url = reverse("authors:create")
+        response = self.client.post(url, data=self.form_data, follow=True)
+        msg = "Password and password2 must be equal."
+        self.assertIn(msg, response.content.decode("utf-8"))
+        self.assertIn(msg, response.context["form"].errors.get("password"))
+
+        self.form_data["password"] = "@A123abc123"
+        self.form_data["password2"] = "@A123abc123"
+        url = reverse("authors:create")
+        response = self.client.post(url, data=self.form_data, follow=True)
+        self.assertNotIn(msg, response.content.decode("utf-8"))
+
+    def test_send_get_request_to_registration_create_view_returns_404(self):
+        url = reverse("authors:create")
+        response = self.client.get(url, data=self.form_data, follow=True)
+        self.assertEqual(response.status_code, 404)
