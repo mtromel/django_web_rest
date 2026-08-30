@@ -13,7 +13,7 @@ class RecipeSearchViewTest(RecipeTestBase):
     def test_recipe_search_view_function_is_correct(self):
         """Teste para verificar se a função da view search é a correta"""
         view = resolve(reverse("recipes:search"))
-        self.assertIs(view.func, views.search)
+        self.assertIs(view.func.view_class, views.RecipeListViewSearch)
 
     def test_recipe_search_view_loads_correct_template(self):
         """Teste para verificar se a view search carrega o template correto"""

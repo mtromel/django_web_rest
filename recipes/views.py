@@ -2,13 +2,13 @@ import os
 
 from django.db.models import Q
 from django.http.response import Http404
-from django.shortcuts import get_list_or_404, get_object_or_404, render
+from django.shortcuts import get_object_or_404, render
 from django.views.generic import ListView
 
 from recipes.models import Recipe
 from utils.pagination import make_pagination
 
-PER_PAGE = int(os.environ.get("PER_PAGE", 6))
+PER_PAGE = int(os.environ.get("PER_PAGE", "9"))
 
 
 class RecipeListViewBase(ListView):
@@ -41,18 +41,6 @@ class RecipeListViewHome(RecipeListViewBase):
     template_name = "recipes/pages/home.html"
 
 
-# def home(request):
-#     recipes = Recipe.objects.filter(is_published=True).order_by("-id")
-
-#     page_object, pagination_range = make_pagination(request, recipes, PER_PAGE)
-
-#     return render(
-#         request,
-#         "recipes/pages/home.html",
-#         context={"recipes": page_object, "pagination_range": pagination_range},
-#     )
-
-
 class RecipeListViewCategory(RecipeListViewBase):
     template_name = "recipes/pages/category.html"
 
@@ -63,44 +51,21 @@ class RecipeListViewCategory(RecipeListViewBase):
             category__id=self.kwargs.get("category_id"),
         )
 
+        if not qs:
+            raise Http404()
+
         return qs
 
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
 
-def category(request, category_id):
-    recipes = get_list_or_404(
-        Recipe.objects.filter(category__id=category_id, is_published=True).order_by(
-            "-id"
+        ctx.update(
+            {
+                "title": f"{ctx.get('recipes')[0].category.name} - Category | ",
+            }
         )
-    )
 
-    page_object, pagination_range = make_pagination(request, recipes, PER_PAGE)
-
-    return render(
-        request,
-        "recipes/pages/category.html",
-        context={
-            "recipes": page_object,
-            "pagination_range": pagination_range,
-            "title": f"{recipes[0].category.name} - Category | ",
-        },
-    )
-
-
-def recipe(request, id):
-    recipe = get_object_or_404(
-        Recipe,
-        pk=id,
-        is_published=True,
-    )
-
-    return render(
-        request,
-        "recipes/pages/recipe-view.html",
-        context={
-            "recipe": recipe,
-            "is_detail_page": True,
-        },
-    )
+        return ctx
 
 
 class RecipeListViewSearch(RecipeListViewBase):
@@ -108,6 +73,8 @@ class RecipeListViewSearch(RecipeListViewBase):
 
     def get_queryset(self, *args, **kwargs):
         search_term = self.request.GET.get("q", "")
+        if not search_term:
+            raise Http404()
         qs = super().get_queryset(*args, **kwargs)
 
         qs = qs.filter(
@@ -134,29 +101,18 @@ class RecipeListViewSearch(RecipeListViewBase):
         return ctx
 
 
-def search(request):
-    search_term = request.GET.get("q", "").strip()
-
-    if not search_term:
-        raise Http404()
-
-    recipes = Recipe.objects.filter(
-        Q(
-            Q(title__icontains=search_term) | Q(description__icontains=search_term),
-            is_published=True,
-        ),
-    ).order_by("-id")
-
-    page_object, pagination_range = make_pagination(request, recipes, PER_PAGE)
+def recipe(request, id):
+    recipe = get_object_or_404(
+        Recipe,
+        pk=id,
+        is_published=True,
+    )
 
     return render(
         request,
-        "recipes/pages/search.html",
-        {
-            "page_title": f'Search for "{search_term}" |',
-            "search_term": search_term,
-            "recipes": page_object,
-            "pagination_range": pagination_range,
-            "addition_url_query": f"&q={search_term}",
+        "recipes/pages/recipe-view.html",
+        context={
+            "recipe": recipe,
+            "is_detail_page": True,
         },
     )

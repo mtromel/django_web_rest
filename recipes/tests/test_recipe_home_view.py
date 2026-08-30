@@ -15,7 +15,7 @@ class RecipeHomeViewTest(RecipeTestBase):
     def test_recipe_home_view_function_is_correct(self):
         """Teste para verificar se a função da view home é a correta"""
         view = resolve(reverse("recipes:home"))
-        self.assertIs(view.func, views.home)
+        self.assertIs(view.func.view_class, views.RecipeListViewHome)
 
     def test_recipe_home_view_returns_status_code_200(self):
         """Teste para verificar se a view home retorna o status code 200"""
