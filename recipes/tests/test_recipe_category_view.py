@@ -42,7 +42,7 @@ class RecipeCategoryViewTest(RecipeTestBase):
             reverse(
                 "recipes:recipe",
                 kwargs={
-                    "id": recipe.category.id,
+                    "pk": recipe.category.id,
                 },
             )
         )
