@@ -37,16 +37,33 @@ class RecipeListViewBase(ListView):
         return ctx
 
 
-def home(request):
-    recipes = Recipe.objects.filter(is_published=True).order_by("-id")
+class RecipeListViewHome(RecipeListViewBase):
+    template_name = "recipes/pages/home.html"
 
-    page_object, pagination_range = make_pagination(request, recipes, PER_PAGE)
 
-    return render(
-        request,
-        "recipes/pages/home.html",
-        context={"recipes": page_object, "pagination_range": pagination_range},
-    )
+# def home(request):
+#     recipes = Recipe.objects.filter(is_published=True).order_by("-id")
+
+#     page_object, pagination_range = make_pagination(request, recipes, PER_PAGE)
+
+#     return render(
+#         request,
+#         "recipes/pages/home.html",
+#         context={"recipes": page_object, "pagination_range": pagination_range},
+#     )
+
+
+class RecipeListViewCategory(RecipeListViewBase):
+    template_name = "recipes/pages/category.html"
+
+    def get_queryset(self, *args, **kwargs):
+        qs = super().get_queryset(*args, **kwargs)
+
+        qs = qs.filter(
+            category__id=self.kwargs.get("category_id"),
+        )
+
+        return qs
 
 
 def category(request, category_id):
@@ -84,6 +101,37 @@ def recipe(request, id):
             "is_detail_page": True,
         },
     )
+
+
+class RecipeListViewSearch(RecipeListViewBase):
+    template_name = "recipes/pages/search.html"
+
+    def get_queryset(self, *args, **kwargs):
+        search_term = self.request.GET.get("q", "")
+        qs = super().get_queryset(*args, **kwargs)
+
+        qs = qs.filter(
+            Q(
+                Q(title__icontains=search_term) | Q(description__icontains=search_term),
+                is_published=True,
+            ),
+        )
+
+        return qs
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        search_term = self.request.GET.get("q", "")
+
+        ctx.update(
+            {
+                "page_title": f'Search for "{search_term}" |',
+                "search_term": search_term,
+                "addition_url_query": f"&q={search_term}",
+            }
+        )
+
+        return ctx
 
 
 def search(request):
