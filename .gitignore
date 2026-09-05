@@ -25,6 +25,7 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+deploy/
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -222,6 +223,7 @@ marimo/_lsp/
 __marimo__/
 
 # Personal additions
+__pycache__/
 *.pyc
 __localcode
 .DS_Store
