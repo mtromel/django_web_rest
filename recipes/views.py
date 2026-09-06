@@ -149,5 +149,6 @@ class RecipeDetailApi(RecipeDetail):
             recipe_dict["cover"] = ""
 
         del recipe_dict["is_published"]
+        del recipe_dict["preparation_steps_is_html"]
 
         return JsonResponse(recipe_dict, safe=False)

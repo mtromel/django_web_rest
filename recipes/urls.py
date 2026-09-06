@@ -22,3 +22,9 @@ urlpatterns = [
         name="recipes_api_v1_detail",
     ),
 ]
+#     path(
+#         "recipes/api/v1/<int:pk>/",
+#         views.RecipeDetailApi.as_view(),
+#         name="recipes_api_v1_detail",
+#     ),
+# ]
