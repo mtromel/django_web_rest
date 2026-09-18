@@ -157,7 +157,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-venvDWRF
+venvDrf
 
 # Spyder project settings
 .spyderproject
