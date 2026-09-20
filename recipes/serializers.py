@@ -19,12 +19,11 @@ class RecipeSerializer(serializers.ModelSerializer):
             "id",
             "title",
             "description",
-            "category",
-            "category_name",
-            "preparation",
             "author",
-            "public",
+            "category",
             "tags",
+            "public",
+            "preparation",
             "tag_objects",
             "tag_links",
             "preparation_time",
@@ -36,9 +35,10 @@ class RecipeSerializer(serializers.ModelSerializer):
         )
 
     public = serializers.BooleanField(source="is_published", read_only=True)
-    preparation = serializers.SerializerMethodField(read_only=True)
-    category = serializers.PrimaryKeyRelatedField(read_only=True)
-    category_name = serializers.StringRelatedField(source="category", read_only=True)
+    preparation = serializers.SerializerMethodField(
+        method_name="get_preparation", read_only=True
+    )
+    category = serializers.StringRelatedField(read_only=True)
     tag_objects = TagSerializer(many=True, source="tags", read_only=True)
     tag_links = serializers.HyperlinkedRelatedField(
         many=True,
@@ -60,3 +60,12 @@ class RecipeSerializer(serializers.ModelSerializer):
         super_validate = super().validate(attrs)
         AuthorRecipeValidator(data=attrs, ErrorClass=serializers.ValidationError)
         return super_validate
+
+    def save(self, **kwargs):
+        return super().save(**kwargs)
+
+    def create(self, validated_data):
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        return super().update(instance, validated_data)
