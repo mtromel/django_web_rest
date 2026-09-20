@@ -1,5 +1,6 @@
 import os
 import random
+import string
 from collections import defaultdict
 
 from django.conf import settings
@@ -38,6 +39,8 @@ class RecipeManager(models.Manager):
                 )
             )
             .order_by("-id")
+            .select_related("category", "author")
+            .prefetch_related("tags")
         )
 
 
@@ -91,10 +94,14 @@ class Recipe(models.Model):
         )
 
     def save(self, *args, **kwargs):
-        numslug = random.randint(1, 9999)
         if not self.slug:
-            slug = f"{slugify(self.title)}-{numslug}"
-            self.slug = slug
+            rand_letters = "".join(
+                random.SystemRandom().choices(
+                    string.ascii_letters + string.digits,
+                    k=5,
+                )
+            )
+            self.slug = slugify(f"{self.title}-{rand_letters}")
 
         saved = super().save(*args, **kwargs)
 

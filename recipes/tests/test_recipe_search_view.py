@@ -2,7 +2,7 @@
 
 from django.urls import resolve, reverse
 
-from recipes import views
+from recipes.views import site
 
 from .test_recipe_base import RecipeTestBase
 
@@ -13,7 +13,7 @@ class RecipeSearchViewTest(RecipeTestBase):
     def test_recipe_search_view_function_is_correct(self):
         """Teste para verificar se a função da view search é a correta"""
         view = resolve(reverse("recipes:search"))
-        self.assertIs(view.func.view_class, views.RecipeListViewSearch)
+        self.assertIs(view.func.view_class, site.RecipeListViewSearch)
 
     def test_recipe_search_view_loads_correct_template(self):
         """Teste para verificar se a view search carrega o template correto"""
