@@ -24,6 +24,7 @@ class RecipeAPIv2ViewSet(ModelViewSet):
     permission_classes = [  # noqa: RUF012
         IsAuthenticatedOrReadOnly,
     ]
+    http_method_names = ["get", "options", "head", "patch", "post", "delete"]  # noqa: RUF012
 
     def get_queryset(self):
         qs = super().get_queryset()
